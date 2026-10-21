@@ -17,6 +17,8 @@ import jakarta.inject.Inject;
 @ApplicationScoped
 public class UsuarioUseCase {
 
+    // Presenter  <- Service -> Repository (Banco de Dados), Entidades (Regras de Negocio)
+
 
     private final UsuarioRepository usuarioRepository;
     private final SenhaBCrypt senhaBCrypt;
@@ -37,8 +39,10 @@ public class UsuarioUseCase {
         String hash = senhaBCrypt.criarHash(request.senha());
 
         Usuario novoUsuario = new Usuario(request.nome(), request.email(), hash);
+
         Usuario usuarioSalvo = usuarioRepository.salvar(novoUsuario);
 
         return UsuarioResponse.de(usuarioSalvo);
     }
+
 }
