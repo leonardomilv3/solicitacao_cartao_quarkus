@@ -2,7 +2,6 @@ package br.edu.fiap.cartoes.entity;
 
 import jakarta.persistence.*;
 import java.time.Instant;
-import br.edu.fiap.cartoes.exception.EtapaNaoImplementadaException;
 
 /**
  * Camada entity: representa o estado persistido de Cartao e seus comportamentos simples.
@@ -37,19 +36,19 @@ public class Cartao {
         this.status = StatusCartao.ATIVO;
     }
 
-    protected Cartao(Long id, SolicitacaoCartao solicitacao) {
+    private Cartao(Long id, SolicitacaoCartao solicitacao, Instant emitidoEm, StatusCartao status) {
         this.id = id;
         this.solicitacao = solicitacao;
-        this.emitidoEm = Instant.now();
-        this.status = StatusCartao.ATIVO;
+        this.emitidoEm = emitidoEm;
+        this.status = status;
     }
 
     public static Cartao de(Cartao cartao) {
-        return new Cartao(cartao.getSolicitacao());
+        return new Cartao(cartao.id, cartao.solicitacao, cartao.emitidoEm, cartao.status);
     }
 
     public Cartao paraDominio() {
-        return new Cartao(id, this.solicitacao);
+        return new Cartao(id, solicitacao, emitidoEm, status);
     }
 
     /** Informar se o cartão está ATIVO. Não criar outra rota obrigatória. */

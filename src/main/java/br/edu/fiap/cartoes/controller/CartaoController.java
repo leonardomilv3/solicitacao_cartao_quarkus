@@ -40,7 +40,7 @@ public class CartaoController {
     @APIResponses({
         @APIResponse(responseCode="200",description="Operação concluída",content=@Content(schema=@Schema(type=SchemaType.ARRAY, implementation=CartaoResponse.class))),
         @APIResponse(responseCode="401",description="Credenciais ou token ausentes ou inválidos"),
-        @APIResponse(responseCode="501",description="Casca ainda não implementada",content=@Content(schema=@Schema(implementation=ErroResponse.class)))
+        @APIResponse(responseCode="500",description="Falha interna",content=@Content(schema=@Schema(implementation=ErroResponse.class)))
     })
     public List<CartaoResponse> listar() {
         return cartoes.listar(usuarioAtual.id());
