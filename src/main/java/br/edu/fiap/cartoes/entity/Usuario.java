@@ -42,14 +42,12 @@ public class Usuario {
 
     /** Validar o nome antes de alterá-lo. */
     public void alterarNome(String nome) {
-        // TODO: implementar o comportamento descrito no desafio.
-        throw new EtapaNaoImplementadaException("Usuario.alterarNome");
+        this.nome = nome;
     }
 
     /** Aceitar somente hash produzido pelo componente BCrypt, nunca senha em texto. */
     public void atualizarSenhaHash(String senhaHash) {
-        // TODO: implementar o comportamento descrito no desafio.
-        throw new EtapaNaoImplementadaException("Usuario.atualizarSenhaHash");
+        this.senhaHash = senhaHash;
     }
 
     // Getters e setters prontos; não usar setters de status para contornar as regras.
