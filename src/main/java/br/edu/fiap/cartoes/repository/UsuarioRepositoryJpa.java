@@ -34,7 +34,6 @@ public class UsuarioRepositoryJpa implements UsuarioRepository {
     }
 
     @Override
-    @Transactional
     public Optional<Usuario> buscarPorEmail(String email){
         return entityManager.createQuery(BUSCA_POR_EMAIL, Usuario.class)
                 .setParameter("email", email)
@@ -44,12 +43,15 @@ public class UsuarioRepositoryJpa implements UsuarioRepository {
     }
 
     @Override
-    @Transactional
     public Usuario salvar(Usuario usuario) {
         Usuario entity = Usuario.de(usuario);
 
         try{
-            entityManager.persist(entity);
+            if( entity.getId() == null ) {
+                entityManager.persist(entity);
+            } else {
+                entity = entityManager.merge( entity );
+            }
 
             //Flush força o InSERT, No JDBC isso é o executeUpdate
             // O identity só devolve o id depous que o banco executa o insert

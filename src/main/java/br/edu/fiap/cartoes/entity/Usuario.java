@@ -1,8 +1,12 @@
 package br.edu.fiap.cartoes.entity;
 
+import br.edu.fiap.cartoes.exception.EntradaInvalidaException;
 import jakarta.persistence.*;
 import java.time.Instant;
+import java.util.Locale;
+
 import br.edu.fiap.cartoes.exception.EtapaNaoImplementadaException;
+import jakarta.validation.ConstraintViolationException;
 
 /**
  * Camada entity: representa o estado persistido de Usuario e seus comportamentos simples.
@@ -41,13 +45,16 @@ public class Usuario {
     }
 
     public Usuario(Long id, String nome, String email, String senhaHash, Instant criadoEm) {
-        this(nome, email, senhaHash);
         this.id = id;
+        this.nome = nome;
+        this.email = email;
+        this.senhaHash = senhaHash;
         this.criadoEm = criadoEm;
     }
 
     public static Usuario de(Usuario usuario) {
         Usuario entity = new Usuario();
+        entity.id = usuario.id;
         entity.nome = usuario.nome;
         entity.email = usuario.email;
         entity.senhaHash = usuario.senhaHash;
@@ -57,11 +64,30 @@ public class Usuario {
 
     /** Validar o nome antes de alterá-lo. */
     public void alterarNome(String nome) {
-        this.nome = nome;
+        if( nome == null || nome.isBlank() ) {
+            throw new EntradaInvalidaException( "Nome não pode ser nulo ou vazio.");
+        }
+        String normalizado = nome.trim();
+        if( normalizado.length() > 100 ) {
+            throw new EntradaInvalidaException( "Nome não pode exceder 100 caracteres." );
+        }
+        this.nome = normalizado;
+    }
+
+    public static String normalizarEmail( String email ) {
+        if( email == null ) {
+            return null;
+        }
+        String normalizado = email.trim().toLowerCase(Locale.ROOT);
+        return normalizado.isEmpty() ? null : normalizado;
     }
 
     /** Aceitar somente hash produzido pelo componente BCrypt, nunca senha em texto. */
     public void atualizarSenhaHash(String senhaHash) {
+        if( senhaHash == null || senhaHash.isBlank() ) {
+            throw new EntradaInvalidaException( "Hash de senha não pode ser vazio." );
+        }
+        //if( !senhaHash.matches("^\\$2[aby]\\$\\d{2}\\$.{53}$"))
         this.senhaHash = senhaHash;
     }
 
@@ -73,13 +99,8 @@ public class Usuario {
 
     // Getters e setters prontos; não usar setters de status para contornar as regras.
     public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
     public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
     public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
     public String getSenhaHash() { return senhaHash; }
-    public void setSenhaHash(String senhaHash) { this.senhaHash = senhaHash; }
     public Instant getCriadoEm() { return criadoEm; }
-    public void setCriadoEm(Instant criadoEm) { this.criadoEm = criadoEm; }
 }

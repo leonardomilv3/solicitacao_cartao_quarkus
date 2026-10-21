@@ -30,6 +30,8 @@ public class GlobalExceptionMapper implements ExceptionMapper<Exception> {
                 case 404 -> "Recurso não encontrado";
                 default -> "Não foi possível concluir a requisição";
             };
+        } else if(erro instanceof EntradaInvalidaException) {
+            status = 400; codigo = "ENTRADA_INVALIDA"; mensagem=erro.getMessage();
         }
         var resposta=Response.status(status).type(MediaType.APPLICATION_JSON_TYPE)
             .entity(new ErroResponse(Instant.now(),status,codigo,mensagem,uri.getPath()));

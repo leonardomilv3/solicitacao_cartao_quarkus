@@ -1,14 +1,14 @@
 package br.edu.fiap.cartoes.usecase;
 import br.edu.fiap.cartoes.entity.Usuario;
 import br.edu.fiap.cartoes.exception.EmailJaCadastradoException;
+import br.edu.fiap.cartoes.exception.EntradaInvalidaException;
 import br.edu.fiap.cartoes.repository.UsuarioRepository;
 import br.edu.fiap.cartoes.security.SenhaBCrypt;
 import jakarta.enterprise.context.ApplicationScoped;
-import java.util.List;
 import br.edu.fiap.cartoes.dto.*;
-import br.edu.fiap.cartoes.entity.StatusSolicitacao;
-import br.edu.fiap.cartoes.exception.EtapaNaoImplementadaException;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+
 /**
  * Camada de aplicação a implementar: coordena uma operação, suas regras e transação.
  * O controller já chama estas assinaturas. Na migração para Clean, substituam
@@ -28,15 +28,21 @@ public class UsuarioUseCase {
     }
 
     /** Normalizar e-mail, rejeitar duplicado, gerar hash BCrypt, persistir e mapear sem senha. */
+    @Transactional
     public UsuarioResponse cadastrar(UsuarioRequest request) {
 
-        if ( usuarioRepository.buscarPorEmail(request.email()).isPresent() ) {
+        String emailNormalizado = Usuario.normalizarEmail( request.email() );
+        if( emailNormalizado == null ) {
+            throw new EntradaInvalidaException( "Email não pode ser vazio.");
+        }
+
+        if ( usuarioRepository.buscarPorEmail(emailNormalizado).isPresent() ) {
             throw new EmailJaCadastradoException();
         }
 
         String hash = senhaBCrypt.criarHash(request.senha());
 
-        Usuario novoUsuario = new Usuario(request.nome(), request.email(), hash);
+        Usuario novoUsuario = new Usuario(request.nome(), emailNormalizado, hash);
         Usuario usuarioSalvo = usuarioRepository.salvar(novoUsuario);
 
         return UsuarioResponse.de(usuarioSalvo);

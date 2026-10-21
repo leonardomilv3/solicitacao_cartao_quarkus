@@ -17,5 +17,7 @@ public interface UsuarioRepository {
 
     Optional<Usuario> buscarPorEmail(String email);
 
+    //Optional<Usuario> buscarPorIdComBloqueio( Long id );
+
     Optional<Usuario> buscarPorId(Long id);
 }
