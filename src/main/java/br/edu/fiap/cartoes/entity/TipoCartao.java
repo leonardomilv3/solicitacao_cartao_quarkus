@@ -37,8 +37,7 @@ public class TipoCartao {
 
     /** Alterar a oferta do tipo sem apagar pedidos anteriores. */
     public void alterarDisponibilidade(boolean disponivel) {
-        // TODO: implementar o comportamento descrito no desafio.
-        throw new EtapaNaoImplementadaException("TipoCartao.alterarDisponibilidade");
+        this.disponivel = disponivel;
     }
 
     // Getters e setters prontos; não usar setters de status para contornar as regras.

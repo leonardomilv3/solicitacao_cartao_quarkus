@@ -39,8 +39,7 @@ public class Cartao {
 
     /** Informar se o cartão está ATIVO. Não criar outra rota obrigatória. */
     public boolean estaAtivo() {
-        // TODO: implementar o comportamento descrito no desafio.
-        throw new EtapaNaoImplementadaException("Cartao.estaAtivo");
+        return status == StatusCartao.ATIVO;
     }
 
     // Getters e setters prontos; não usar setters de status para contornar as regras.

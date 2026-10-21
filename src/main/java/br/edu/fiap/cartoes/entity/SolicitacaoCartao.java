@@ -44,14 +44,18 @@ public class SolicitacaoCartao {
 
     /** Permitir somente PENDENTE para CANCELADA; outros estados geram conflito. */
     public void cancelar() {
-        // TODO: implementar o comportamento descrito no desafio.
-        throw new EtapaNaoImplementadaException("SolicitacaoCartao.cancelar");
+        if (status != StatusSolicitacao.PENDENTE) {
+            throw new IllegalStateException("Só é possível cancelar uma solicitação pendente.");
+        }
+        this.status = StatusSolicitacao.CANCELADA;
     }
 
     /** Permitir somente PENDENTE para EMITIDA; executar na mesma transação da criação do cartão. */
     public void marcarEmitida() {
-        // TODO: implementar o comportamento descrito no desafio.
-        throw new EtapaNaoImplementadaException("SolicitacaoCartao.marcarEmitida");
+        if (status != StatusSolicitacao.PENDENTE) {
+            throw new IllegalStateException("Só é possível marcar como emitida uma solicitação pendente.");
+        }
+        this.status = StatusSolicitacao.EMITIDA;
     }
 
     // Getters e setters prontos; não usar setters de status para contornar as regras.
