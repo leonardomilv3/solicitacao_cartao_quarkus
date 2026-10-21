@@ -37,11 +37,25 @@ public class Cartao {
         this.status = StatusCartao.ATIVO;
     }
 
+    protected Cartao(Long id, SolicitacaoCartao solicitacao) {
+        this.id = id;
+        this.solicitacao = solicitacao;
+        this.emitidoEm = Instant.now();
+        this.status = StatusCartao.ATIVO;
+    }
+
+    public static Cartao de(Cartao cartao) {
+        return new Cartao(cartao.getSolicitacao());
+    }
+
+    public Cartao paraDominio() {
+        return new Cartao(id, this.solicitacao);
+    }
+
     /** Informar se o cartão está ATIVO. Não criar outra rota obrigatória. */
     public boolean estaAtivo() {
         return status == StatusCartao.ATIVO;
     }
-
     // Getters e setters prontos; não usar setters de status para contornar as regras.
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -50,5 +64,6 @@ public class Cartao {
     public Instant getEmitidoEm() { return emitidoEm; }
     public void setEmitidoEm(Instant emitidoEm) { this.emitidoEm = emitidoEm; }
     public StatusCartao getStatus() { return status; }
+
     public void setStatus(StatusCartao status) { this.status = status; }
 }

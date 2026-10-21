@@ -40,6 +40,21 @@ public class Usuario {
         this.criadoEm = Instant.now();
     }
 
+    public Usuario(Long id, String nome, String email, String senhaHash, Instant criadoEm) {
+        this(nome, email, senhaHash);
+        this.id = id;
+        this.criadoEm = criadoEm;
+    }
+
+    public static Usuario de(Usuario usuario) {
+        Usuario entity = new Usuario();
+        entity.nome = usuario.nome;
+        entity.email = usuario.email;
+        entity.senhaHash = usuario.senhaHash;
+        entity.criadoEm = usuario.criadoEm;
+        return entity;
+    }
+
     /** Validar o nome antes de alterá-lo. */
     public void alterarNome(String nome) {
         this.nome = nome;
@@ -48,6 +63,12 @@ public class Usuario {
     /** Aceitar somente hash produzido pelo componente BCrypt, nunca senha em texto. */
     public void atualizarSenhaHash(String senhaHash) {
         this.senhaHash = senhaHash;
+    }
+
+
+    /** Copia a linha persistida, inclusive o id gerado pelo banco. */
+    public Usuario paraDominio() {
+        return new Usuario(id, nome, email, senhaHash, criadoEm);
     }
 
     // Getters e setters prontos; não usar setters de status para contornar as regras.
