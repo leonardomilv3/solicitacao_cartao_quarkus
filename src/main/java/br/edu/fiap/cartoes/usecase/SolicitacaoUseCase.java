@@ -53,7 +53,7 @@ public class SolicitacaoUseCase implements SolicitacaoUseCasePort {
         }
 
         // Pedido duplicado
-        if (solicitacaoCartaoRepository.listarPorStatus(usuarioId, StatusSolicitacao.PENDENTE)
+        if (solicitacaoCartaoRepository.listar(usuarioId, StatusSolicitacao.PENDENTE)
                 .stream()
                 .anyMatch(
                         solicitacao -> solicitacao.getTipoCartao().getId().equals(tipoCartao.getId()
@@ -77,14 +77,9 @@ public class SolicitacaoUseCase implements SolicitacaoUseCasePort {
     @Override
     @Transactional 
     public List<SolicitacaoResponse> listar(Long usuarioId, StatusSolicitacao status) {
-        List<SolicitacaoCartao> solicitacoes = solicitacaoCartaoRepository.listarPorStatus(usuarioId, status);
-
-        return solicitacoes.stream()
-                .filter(solicitacao -> solicitacao.getUsuario().getId().equals(usuarioId))
+        return solicitacaoCartaoRepository.listar(usuarioId, status).stream()
                 .map(SolicitacaoResponse::de)
                 .toList();
-
-        
     }
 
     /** Buscar por id E titular; retornar 404 para pedido de outro usuário. */
@@ -123,17 +118,9 @@ public class SolicitacaoUseCase implements SolicitacaoUseCasePort {
                 .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado."));
     }
 
-    private SolicitacaoCartao buscarSolicitacao(Long solicitacaoId){
-        return solicitacaoCartaoRepository.buscarPorId(solicitacaoId)
-                .orElseThrow(() -> new SolicitacaoCartaoNaoEncontradaException("Solicitação não encontrada."));
-    }
-
+    /** Mesmo 404 para ID inexistente ou pedido de outro titular: a consulta filtra os dois juntos. */
     private SolicitacaoCartao buscarSolicitacaoDeUsuario(Long usuarioId, Long solicitacaoId) {
-        buscarUsuario(usuarioId);
-        SolicitacaoCartao solicitacao = buscarSolicitacao(solicitacaoId);
-        if (!solicitacao.getUsuario().getId().equals(usuarioId)) {
-            throw new SolicitacaoCartaoNaoEncontradaException("Solicitação não encontrada para este usuário.");
-        }
-        return solicitacao;
+        return solicitacaoCartaoRepository.buscarPorIdEUsuario(solicitacaoId, usuarioId)
+                .orElseThrow(() -> new SolicitacaoCartaoNaoEncontradaException("Solicitação não encontrada."));
     }
 }

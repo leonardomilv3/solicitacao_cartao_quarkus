@@ -15,27 +15,28 @@ import java.util.Optional;
  */
 @ApplicationScoped
 public class SolicitacaoCartaoRepositoryJpa implements SolicitacaoCartaoRepository {
-    // TODO: implementar a interface depois de declarar suas assinaturas.
 
-    private static final String BUSCAR_POR_STATUS = """
+    private static final String LISTAR_POR_USUARIO = """
         SELECT s
         FROM SolicitacaoCartao s
+        JOIN FETCH s.tipoCartao
         WHERE s.usuario.id = :usuarioId
-          AND s.status = :status
-        ORDER BY s.solicitadaEm DESC
         """;
 
+    // Filtro adicionado só quando há status: evita (:status IS NULL OR ...) com enum nulo no Hibernate 6.
+    private static final String FILTRO_STATUS = " AND s.status = :status";
 
-    private static final String BUSCAR_POR_ID = """
+    private static final String ORDENACAO = " ORDER BY s.solicitadaEm DESC, s.id DESC";
+
+    private static final String BUSCAR_POR_ID_E_USUARIO = """
         SELECT s
         FROM SolicitacaoCartao s
+        JOIN FETCH s.tipoCartao
         WHERE s.id = :id
-        ORDER BY s.solicitadaEm DESC
+          AND s.usuario.id = :usuarioId
         """;
-
 
     private final EntityManager entityManager;
-
 
     @Inject
     public SolicitacaoCartaoRepositoryJpa(EntityManager entityManager) {
@@ -44,44 +45,42 @@ public class SolicitacaoCartaoRepositoryJpa implements SolicitacaoCartaoReposito
 
     @Override
     public SolicitacaoCartao salvar(SolicitacaoCartao solicitacaoCartao) {
+        try {
+            SolicitacaoCartao gerenciada = solicitacaoCartao;
+            if (solicitacaoCartao.getId() == null) {
+                entityManager.persist(solicitacaoCartao);
+            } else {
+                gerenciada = entityManager.merge(solicitacaoCartao);
+            }
 
-        SolicitacaoCartao entity = SolicitacaoCartao.de(solicitacaoCartao);
-
-        try{
-            entityManager.persist(entity);
-
-            //Flush força o InSERT, No JDBC isso é o executeUpdate
-            // O identity só devolve o id depous que o banco executa o insert
+            // Flush força o INSERT/UPDATE; o IDENTITY só devolve o id depois que o banco executa o insert.
             entityManager.flush();
+            return gerenciada;
 
-            return entity.paraDominio();
-
-        }catch(RuntimeException erro){
-            throw new FalhaInfraestruturaException("Falhou", erro);
+        } catch (RuntimeException erro) {
+            throw new FalhaInfraestruturaException("Falha ao salvar solicitação de cartão", erro);
         }
-
     }
 
-
     @Override
-    public Optional<SolicitacaoCartao> buscarPorId(Long id) {
-        return entityManager.createQuery(BUSCAR_POR_ID, SolicitacaoCartao.class)
+    public Optional<SolicitacaoCartao> buscarPorIdEUsuario(Long id, Long usuarioId) {
+        return entityManager.createQuery(BUSCAR_POR_ID_E_USUARIO, SolicitacaoCartao.class)
                 .setParameter("id", id)
+                .setParameter("usuarioId", usuarioId)
                 .getResultStream()
                 .findFirst();
     }
 
-
     @Override
-    public List<SolicitacaoCartao> listarPorStatus(
-            Long usuarioId,
-            StatusSolicitacao status) {
+    public List<SolicitacaoCartao> listar(Long usuarioId, StatusSolicitacao status) {
+        String jpql = LISTAR_POR_USUARIO + (status != null ? FILTRO_STATUS : "") + ORDENACAO;
 
-        return entityManager
-                .createQuery(BUSCAR_POR_STATUS, SolicitacaoCartao.class)
-                .setParameter("usuarioId", usuarioId)
-                .setParameter("status", status)
-                .getResultList();
+        var query = entityManager.createQuery(jpql, SolicitacaoCartao.class)
+                .setParameter("usuarioId", usuarioId);
+        if (status != null) {
+            query.setParameter("status", status);
+        }
+        return query.getResultList();
     }
 
 }

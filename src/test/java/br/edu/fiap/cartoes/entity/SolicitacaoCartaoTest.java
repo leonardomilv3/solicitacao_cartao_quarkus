@@ -1,5 +1,6 @@
 package br.edu.fiap.cartoes.entity;
 
+import br.edu.fiap.cartoes.exception.RegraNegocioException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -75,4 +76,19 @@ class SolicitacaoCartaoTest {
         assertEquals(StatusSolicitacao.EMITIDA, solicitacao.getStatus());
     }
 
+    @Test
+    void naoCancelaSolicitacaoQueNaoEstaPendente() {
+        solicitacao.marcarEmitida();
+
+        assertThrows(RegraNegocioException.class, solicitacao::cancelar);
+        assertEquals(StatusSolicitacao.EMITIDA, solicitacao.getStatus());
+    }
+
+    @Test
+    void naoEmiteSolicitacaoQueNaoEstaPendente() {
+        solicitacao.cancelar();
+
+        assertThrows(RegraNegocioException.class, solicitacao::marcarEmitida);
+        assertEquals(StatusSolicitacao.CANCELADA, solicitacao.getStatus());
+    }
 }

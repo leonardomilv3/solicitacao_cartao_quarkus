@@ -5,9 +5,11 @@ import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.*;
 import jakarta.ws.rs.ext.*;
 import java.time.Instant;
+import org.jboss.logging.Logger;
 /** Borda HTTP pronta: traduz falhas sem enviar entidades ou detalhes internos ao cliente. */
 @Provider
 public class GlobalExceptionMapper implements ExceptionMapper<Exception> {
+    private static final Logger LOG = Logger.getLogger(GlobalExceptionMapper.class);
     @Context UriInfo uri;
     @Override public Response toResponse(Exception erro) {
         int status=500; String codigo="ERRO_INTERNO"; String mensagem="Não foi possível concluir a operação";
@@ -33,6 +35,8 @@ public class GlobalExceptionMapper implements ExceptionMapper<Exception> {
         } else if(erro instanceof EntradaInvalidaException) {
             status = 400; codigo = "ENTRADA_INVALIDA"; mensagem=erro.getMessage();
         }
+        // O cliente recebe mensagem genérica; o stack trace fica só no log do servidor.
+        if (status==500) LOG.errorf(erro, "Falha não tratada em %s", uri.getPath());
         var resposta=Response.status(status).type(MediaType.APPLICATION_JSON_TYPE)
             .entity(new ErroResponse(Instant.now(),status,codigo,mensagem,uri.getPath()));
         if (status==401) resposta.header("WWW-Authenticate","Bearer");

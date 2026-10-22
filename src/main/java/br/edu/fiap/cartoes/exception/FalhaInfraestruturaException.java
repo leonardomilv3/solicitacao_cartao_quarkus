@@ -6,6 +6,6 @@ public class FalhaInfraestruturaException extends RuntimeException {
     }
 
     public FalhaInfraestruturaException(String mensagem, Throwable causa) {
-        super(mensagem, causa);
+        super(causa == null || causa.getMessage() == null ? mensagem : mensagem + ": " + causa.getMessage(), causa);
     }
 }

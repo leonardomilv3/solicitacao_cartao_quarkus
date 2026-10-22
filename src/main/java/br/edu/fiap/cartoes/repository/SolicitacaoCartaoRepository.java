@@ -13,14 +13,13 @@ import java.util.Optional;
  * porta da aplicação, sem tipos de EntityManager, ResultSet ou DTO HTTP.
  */
 public interface SolicitacaoCartaoRepository {
-    // TODO: definir assinaturas de consulta e gravação indicadas no README.
 
     SolicitacaoCartao salvar(SolicitacaoCartao solicitacaoCartao);
-//
-    Optional<SolicitacaoCartao> buscarPorId(Long id);
-//
-//    Optional<SolicitacaoCartao> buscarPorTitular(String titular);
-//
-    List<SolicitacaoCartao> listarPorStatus(Long usuarioId, StatusSolicitacao status);
+
+    /** Busca por id e titular juntos: pedido de outro usuário resulta em vazio. */
+    Optional<SolicitacaoCartao> buscarPorIdEUsuario(Long id, Long usuarioId);
+
+    /** Solicitações do titular, mais recentes primeiro; status nulo retorna todas. */
+    List<SolicitacaoCartao> listar(Long usuarioId, StatusSolicitacao status);
 
 }

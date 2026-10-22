@@ -2,7 +2,7 @@ package br.edu.fiap.cartoes.entity;
 
 import jakarta.persistence.*;
 import java.time.Instant;
-import br.edu.fiap.cartoes.exception.EtapaNaoImplementadaException;
+import br.edu.fiap.cartoes.exception.RegraNegocioException;
 
 /**
  * Camada entity: representa o estado persistido de SolicitacaoCartao e seus comportamentos simples.
@@ -43,31 +43,10 @@ public class SolicitacaoCartao {
     }
 
 
-    public SolicitacaoCartao(Long id, Usuario usuario, TipoCartao tipoCartao){
-        this.id = id;
-        this.usuario = usuario;
-        this.tipoCartao = tipoCartao;
-    }
-
-
-    public static SolicitacaoCartao de(SolicitacaoCartao solicitacaoCartao){
-        return new SolicitacaoCartao(solicitacaoCartao.getUsuario(), solicitacaoCartao.getTipoCartao());
-    }
-
-    public SolicitacaoCartao paraDominio() {
-        SolicitacaoCartao copia = new SolicitacaoCartao(usuario, tipoCartao);
-        copia.id = id;
-        copia.solicitadaEm = solicitadaEm;
-        copia.status = status;
-        return copia;
-    }
-
-
-
     /** Permitir somente PENDENTE para CANCELADA; outros estados geram conflito. */
     public void cancelar() {
         if (status != StatusSolicitacao.PENDENTE) {
-            throw new IllegalStateException("Só é possível cancelar uma solicitação pendente.");
+            throw new RegraNegocioException("Só é possível cancelar uma solicitação pendente.");
         }
         this.status = StatusSolicitacao.CANCELADA;
     }
@@ -75,7 +54,7 @@ public class SolicitacaoCartao {
     /** Permitir somente PENDENTE para EMITIDA; executar na mesma transação da criação do cartão. */
     public void marcarEmitida() {
         if (status != StatusSolicitacao.PENDENTE) {
-            throw new IllegalStateException("Só é possível marcar como emitida uma solicitação pendente.");
+            throw new RegraNegocioException("Só é possível marcar como emitida uma solicitação pendente.");
         }
         this.status = StatusSolicitacao.EMITIDA;
     }
