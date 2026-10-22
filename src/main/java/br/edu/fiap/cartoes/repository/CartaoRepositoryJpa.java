@@ -12,14 +12,24 @@ import java.util.List;
  */
 @ApplicationScoped
 public class CartaoRepositoryJpa implements CartaoRepository {
+
+//    private final static String LISTA_POR_TITULAR = """
+//        SELECT c
+//        FROM Cartao c
+//        JOIN FETCH c.solicitacao s
+//        JOIN FETCH s.tipoCartao
+//        WHERE s.usuario.id = :idTitular
+//        ORDER BY c.emitidoEm DESC, c.id DESC
+//    """;
+//
+
     private final static String LISTA_POR_TITULAR = """
         SELECT c
         FROM Cartao c
-        JOIN FETCH c.solicitacao s
-        JOIN FETCH s.tipoCartao
-        WHERE s.usuario.id = :idTitular
+        WHERE c.solicitacao.usuario.id = :idTitular
         ORDER BY c.emitidoEm DESC, c.id DESC
     """;
+
 
     private final static String EXISTE_POR_SOLICITACAO = """
         SELECT c.id

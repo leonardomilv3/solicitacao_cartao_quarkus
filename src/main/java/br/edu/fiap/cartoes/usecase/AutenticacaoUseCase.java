@@ -17,7 +17,7 @@ import jakarta.inject.Inject;
  * a dependência de DTO HTTP por entradas/saídas da aplicação e portas de saída.
  */
 @ApplicationScoped
-public class AutenticacaoUseCase {
+public class AutenticacaoUseCase implements AutenticacaoUseCasePort {
 
     private final UsuarioRepository usuarioRepository;
     private final SenhaBCrypt senhaBCrypt;
@@ -33,6 +33,7 @@ public class AutenticacaoUseCase {
     }
 
     /** Buscar e-mail normalizado, conferir BCrypt, negar genericamente ou emitir JWT. */
+    @Override
     public TokenResponse login(LoginRequest request) {
 
         Usuario usuario = usuarioRepository.buscarPorEmail(request.email())

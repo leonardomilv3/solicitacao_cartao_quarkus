@@ -42,6 +42,24 @@ public class SolicitacaoCartao {
         this.status = StatusSolicitacao.PENDENTE;
     }
 
+
+    public SolicitacaoCartao(Long id, Usuario usuario, TipoCartao tipoCartao){
+        this.id = id;
+        this.usuario = usuario;
+        this.tipoCartao = tipoCartao;
+    }
+
+
+    public static SolicitacaoCartao de(SolicitacaoCartao solicitacaoCartao){
+        return new SolicitacaoCartao(solicitacaoCartao.getUsuario(), solicitacaoCartao.getTipoCartao());
+    }
+
+    public SolicitacaoCartao paraDominio(){
+        return new SolicitacaoCartao(id, usuario, tipoCartao);
+    }
+
+
+
     /** Permitir somente PENDENTE para CANCELADA; outros estados geram conflito. */
     public void cancelar() {
         if (status != StatusSolicitacao.PENDENTE) {

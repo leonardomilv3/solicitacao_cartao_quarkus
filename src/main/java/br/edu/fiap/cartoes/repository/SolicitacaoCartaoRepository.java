@@ -1,6 +1,7 @@
 package br.edu.fiap.cartoes.repository;
 
 import br.edu.fiap.cartoes.entity.SolicitacaoCartao;
+import br.edu.fiap.cartoes.entity.StatusSolicitacao;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,13 +15,12 @@ import java.util.Optional;
 public interface SolicitacaoCartaoRepository {
     // TODO: definir assinaturas de consulta e gravação indicadas no README.
 
-//    SolicitacaoCartao salvar(SolicitacaoCartao solicitacaoCartao);
+    SolicitacaoCartao salvar(SolicitacaoCartao solicitacaoCartao);
 //
-//    Optional<SolicitacaoCartao> buscarPorId(Long id);
+    Optional<SolicitacaoCartao> buscarPorId(Long id);
 //
 //    Optional<SolicitacaoCartao> buscarPorTitular(String titular);
 //
-//    List<SolicitacaoCartao> listarPorStatus(String status);
-
+    List<SolicitacaoCartao> listarPorStatus(Long usuarioId, StatusSolicitacao status);
 
 }

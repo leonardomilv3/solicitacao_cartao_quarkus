@@ -25,20 +25,8 @@ public class CartaoUseCase {
     @Transactional
     public List<CartaoResponse> listar(Long usuarioId) {
         return cartoes.listarPorTitular(usuarioId).stream()
-                .map(this::paraResponse)
+                .map(CartaoResponse::de)
                 .toList();
     }
 
-    private CartaoResponse paraResponse(Cartao cartao) {
-        var solicitacao = cartao.getSolicitacao();
-        var tipoCartao = solicitacao.getTipoCartao();
-        return new CartaoResponse(
-                cartao.getId(),
-                solicitacao.getId(),
-                tipoCartao.getId(),
-                tipoCartao.getNome(),
-                cartao.getEmitidoEm(),
-                cartao.getStatus()
-        );
-    }
 }

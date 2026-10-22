@@ -35,9 +35,20 @@ public class TipoCartao {
         this.disponivel = disponivel;
     }
 
+    public TipoCartao(Long id, String nome, String descricao, boolean disponivel) {
+        this.id = id;
+        this.nome = nome;
+        this.descricao = descricao;
+        this.disponivel = disponivel;
+    }
+
     /** Alterar a oferta do tipo sem apagar pedidos anteriores. */
     public void alterarDisponibilidade(boolean disponivel) {
         this.disponivel = disponivel;
+    }
+
+    public TipoCartao paraDominio(){
+        return new TipoCartao(id, nome, descricao, disponivel);
     }
 
     // Getters e setters prontos; não usar setters de status para contornar as regras.

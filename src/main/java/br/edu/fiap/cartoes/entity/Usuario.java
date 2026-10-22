@@ -99,6 +99,7 @@ public class Usuario {
 
     // Getters e setters prontos; não usar setters de status para contornar as regras.
     public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
     public String getNome() { return nome; }
     public String getEmail() { return email; }
     public String getSenhaHash() { return senhaHash; }

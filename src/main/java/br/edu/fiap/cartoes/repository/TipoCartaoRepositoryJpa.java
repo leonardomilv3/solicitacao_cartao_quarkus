@@ -10,14 +10,22 @@ import br.edu.fiap.cartoes.entity.TipoCartao;
 public class TipoCartaoRepositoryJpa implements TipoCartaoRepository {
     // TODO: implementar a busca com EntityManager, sem chamar o adaptador JDBC.
 
+    private static final String BUSCAR_POR_ID = "SELECT t FROM TipoCartao t WHERE t.id = :id";
+
+
+    private final EntityManager entityManager;
+
     @Inject
-    EntityManager entityManager;
+    public TipoCartaoRepositoryJpa(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
 
     @Override
     public Optional<TipoCartao> buscarPorId(Long id) {
-
-        TipoCartao tipo = entityManager.find(TipoCartao.class, id);
-
-        return Optional.ofNullable(tipo);
+        return entityManager.createQuery(BUSCAR_POR_ID, TipoCartao.class)
+                .setParameter("id", id)
+                .getResultStream()
+                .findFirst()
+                .map(TipoCartao::paraDominio);
     }
 }

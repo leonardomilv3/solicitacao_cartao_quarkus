@@ -3,6 +3,7 @@ import br.edu.fiap.cartoes.entity.Usuario;
 import br.edu.fiap.cartoes.exception.EmailJaCadastradoException;
 import br.edu.fiap.cartoes.exception.FalhaInfraestruturaException;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 
@@ -29,6 +30,7 @@ public class UsuarioRepositoryJpa implements UsuarioRepository {
 
     private final EntityManager entityManager;
 
+    @Inject
     public UsuarioRepositoryJpa(EntityManager entityManager) {
         this.entityManager = entityManager;
     }

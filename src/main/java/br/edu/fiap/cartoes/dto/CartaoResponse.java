@@ -1,5 +1,7 @@
 package br.edu.fiap.cartoes.dto;
 import java.time.Instant;
+
+import br.edu.fiap.cartoes.entity.Cartao;
 import br.edu.fiap.cartoes.entity.StatusSolicitacao;
 import br.edu.fiap.cartoes.entity.StatusCartao;
 import jakarta.validation.constraints.*;
@@ -13,4 +15,14 @@ public record CartaoResponse(
      @Schema(description = "Nome do tipo", example = "ESSENCIAL") String tipoCartaoNome,
      @Schema(description = "Data de emissão UTC", example = "2026-10-20T12:00:00Z") Instant emitidoEm,
      @Schema(description = "ATIVO ou BLOQUEADO", example = "ATIVO") StatusCartao status
-) {}
+) {
+
+    public static CartaoResponse de(Cartao cartao) {
+        return new CartaoResponse(cartao.getId(),
+             cartao.getSolicitacao().getId(),
+             cartao.getSolicitacao().getTipoCartao().getId(),
+             cartao.getSolicitacao().getTipoCartao().getNome(),
+             cartao.getEmitidoEm(),
+             cartao.getStatus());
+    }
+}
