@@ -80,7 +80,7 @@ public class SolicitacaoCartaoRepositoryJpa implements SolicitacaoCartaoReposito
         return entityManager
                 .createQuery(BUSCAR_POR_STATUS, SolicitacaoCartao.class)
                 .setParameter("usuarioId", usuarioId)
-                .setParameter("status", status.toString())
+                .setParameter("status", status)
                 .getResultList();
     }
 

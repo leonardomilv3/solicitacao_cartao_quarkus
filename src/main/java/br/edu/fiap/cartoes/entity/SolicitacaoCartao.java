@@ -54,8 +54,12 @@ public class SolicitacaoCartao {
         return new SolicitacaoCartao(solicitacaoCartao.getUsuario(), solicitacaoCartao.getTipoCartao());
     }
 
-    public SolicitacaoCartao paraDominio(){
-        return new SolicitacaoCartao(id, usuario, tipoCartao);
+    public SolicitacaoCartao paraDominio() {
+        SolicitacaoCartao copia = new SolicitacaoCartao(usuario, tipoCartao);
+        copia.id = id;
+        copia.solicitadaEm = solicitadaEm;
+        copia.status = status;
+        return copia;
     }
 
 
